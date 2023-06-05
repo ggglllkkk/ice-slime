@@ -15,10 +15,12 @@ class Inventory(pygame.sprite.Sprite):
         self.dropped = pygame.sprite.Group()
         self.changed = False
 
+    #update
     def update(self, screen):
         self.fcases(screen)
         if self.isOpen: self.drawSelf(screen)
 
+    #si click détecté
     def gettingClicked(self, screen, playerRect):
         mousePos=pygame.mouse.get_pos()
         a=pygame.Rect(mousePos+(1,1))
@@ -40,6 +42,7 @@ class Inventory(pygame.sprite.Sprite):
             self.changed = True
             self.selectedItem = None
 
+    #dessiner l'inventaire
     def drawSelf(self, screen):
         mousePos=pygame.mouse.get_pos()
 
@@ -58,6 +61,7 @@ class Inventory(pygame.sprite.Sprite):
             temp = pygame.transform.scale(self.selectedItem.image, (64,64))
             screen.blit(temp, mousePos)
 
+    #prendre un objet au sol
     def pickUp(self):
         a=pygame.mouse.get_pos()
         for k in self.dropped:
@@ -67,6 +71,7 @@ class Inventory(pygame.sprite.Sprite):
                 self.selectedItem = k
                 self.changed = True
 
+    #crée des cases pour les slots de l'inventaire
     def fcases(self, screen):
         a=screen.get_size()
         b=((a[0]-self.case*5-self.interCase*6)//2, (a[1]-self.case*2-self.interCase*3)//2)
@@ -80,15 +85,16 @@ class Inventory(pygame.sprite.Sprite):
     def openInv(self):
         self.isOpen = not self.isOpen
 
+    #ajouter un item
     def addItem(self, item, place):
         a=item
         a.invNumber = place
         self.inv.add(a)
     
+    #changer d'item en main
     def changeCurrentItem(self, item, destination):
         if self.currentItem != None: destination.add(self.currentItem)
         self.currentItem = item
         self.inv.remove(item)
           
     def deleteItem(self, item): self.inv.remove(item)
-    

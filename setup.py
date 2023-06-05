@@ -1,3 +1,5 @@
+#crée une version .exe du projet en exécutant compile.bat
+
 from cx_Freeze import setup, Executable
 
 build_exe_options = {
@@ -13,5 +15,3 @@ setup(
     options={"build_exe": build_exe_options},
     executables = [Executable("main.py")],
 )
-
-#build an .exe by running the "python setup.py build" command in local powershell

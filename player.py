@@ -22,12 +22,14 @@ class Player(pygame.sprite.Sprite):
         self.inv.changeCurrentItem(gameItems.weapons["long-sword"], self.inv.inv)
         self.i = 0
     
+    #update
     def update(self, collisions, hostileMobs, screen):
         self.collisions = collisions
         self.feet = pygame.Rect(self.rect.midbottom+(0,0))
-        #if self.pv <= 0: self.isDead = True
+        if self.pv <= 0: self.isDead = True
         if self.isDead: self.died(screen)
         
+        #choisi sa victime la + proche
         for k in hostileMobs:
             a=m.sqrt(abs((self.rect.center[0]-k.rect.center[0])**2)+abs((self.rect.center[1]-k.rect.center[1])**2))
             if a<self.detectRange:
@@ -42,14 +44,16 @@ class Player(pygame.sprite.Sprite):
         if self.target: self.attack(hostileMobs)
         else: self.inv.currentItem.update(pygame.Rect(self.rect.x+self.rect.width, self.rect.y+self.rect.height-10,0,0))
     
+    #attaque
     def attack(self, hostileMobs):
-        if self.inv.currentItem.rect.colliderect(self.target.rect):
+        if self.inv.currentItem.activeAttackRect.colliderect(self.target.rect):
             if (self.inv.currentItem.isRecharging or self.inv.currentItem.isAttacking): return
             self.inv.currentItem.attack()
             for k in hostileMobs:
                 if self.inv.currentItem.activeAttackRect.colliderect(k.rect):
                     k.pv-=self.inv.currentItem.damage
 
+    #met à jour son arme: fait suivre sa position+gauche/droite+la tourne (trigo) pour être en phase avec le monstre qu'il attaque
     def updateWeapon(self):
         a=0
         c=-1
@@ -85,12 +89,14 @@ class Player(pygame.sprite.Sprite):
     
     def selfCoos(self, screenSize): return (screenSize[0]//2-(self.rect[2]//2), screenSize[1]//2-(self.rect[3]//2))
     
+    #affiche le menu de mort (copie de celui de dark souls)
     def died(self, screen):
+        c=150
         screen.fill((0,0,0))
         a=pygame.image.load("data/images/uDied.png")
         b=((screen.get_size()[0]//2-a.get_size()[0]//2), (screen.get_size()[1]//2-a.get_size()[1]//2))
         screen2 = pygame.Surface(screen.get_size())
-        screen2.set_alpha(255*(self.i/150))
+        screen2.set_alpha(255*(self.i/c))
         screen2.blit(a, b)
         screen.blit(screen2, (0,0))
-        if self.i <= 150: self.i += 1
+        if self.i <= c: self.i += 1

@@ -6,12 +6,14 @@ import pytmx, pyscroll
 import manager, mobs, gameItems, menu, maps
 from player import Player
 
+#Variables
 buttonActions = []
 username = "Slime"
 gamePaused = False
 pressedKeys = {}
 pressedKeys2 = {}
 
+#Initialisation de pygame
 pygame.init()
 sounds = {"oof":pygame.mixer.Sound("data/sounds/oof.wav")}
 for key in sounds.keys(): sounds[key].set_volume(0.001)
@@ -21,13 +23,16 @@ screen = pygame.display.set_mode((1280,720), RESIZABLE)
 pygame.display.set_caption('Slime')
 pygame.display.set_icon(pygame.image.load("data/images/player.png"))
 
+#Initialisation du module musique (non implémenté encore)
 music = {"rush E": pygame.mixer.Sound("data/sounds/rush_E.wav"), "bombjack": pygame.mixer.Sound("data/sounds/bombjack.wav")}
 musicChannel = pygame.mixer.Channel(1)
 musicChannel.set_volume(0.001)
 musicChannel.play(music["bombjack"])
 
+#Initialisation des polices
 police = pygame.font.Font("data/fonts/alagard.ttf", 20)
 
+#Création des variables pour la carte
 group=None
 tmx_data=None
 map_data=None
@@ -36,11 +41,12 @@ collisions=None
 hostileMobs=None
 hostileMobsItems=None
 
+#Création des instances
 player = Player()
 gameMenu = menu.pauseMenu(screen.get_size())
 
 
-
+#Charge une carte selon son nom
 def loadMap(map):
     global group, player, tmx_data, map_data, map_layer, collisions, hostileMobs, hostileMobsItems
     map = maps.Map(map)
@@ -64,20 +70,14 @@ def loadMap(map):
 
     groupReset()
 
+#Update à chaque actualisation
 def update():
     hostileMobs.update(collisions, player)
-    """for k in hostileMobs:
-        if k.isDead: 
-            hostileMobs.remove(k)
-            hostileMobsItems=pygame.sprite.Group()
-            for k in hostileMobs: hostileMobsItems.add(k.weapon)
-            group.add(hostileMobs)
-            group.add(hostileMobsItems)
-            groupReset()"""
 
     player.update(collisions, hostileMobs, screen)
     keyEventsManager(pressedKeys)
 
+#Ré-importe les sprites si changement dans l'affichage
 def groupReset():
     group2 = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=1)
     for k in group:
@@ -90,6 +90,7 @@ def groupReset():
 
     return group2
 
+#Dessin de la barre de vie
 def healthBar(x,y):
     a=8
     pygame.draw.rect(screen, (0,0,0), (x-11, y-11, 93, 23))
@@ -98,39 +99,34 @@ def healthBar(x,y):
     pygame.draw.circle(screen, (0,0,0),(x-30, y),30)
     screen.blit(player.image, (x-45,y-15))
 
+#Reçoit les inputs pressés et les analyse
 def keyEventsManager(events):
     global pressedKeys2
     toDo = {"up":player.up, "down":player.down, "left":player.left, "right":player.right, "inventory":player.inv.openInv, "pickUp":player.inv.pickUp}
     dico=manager.getKeys()
     for key, active in pressedKeys.items():
-        #if not active: continued 
         a=False
         for k,n in dico.items():
             if n[1]==key: a=k
         if not a: continue
         if dico[a][0]==1 or (dico[a][0]==0 and (not key in pressedKeys2.keys())):
-            #if (player.inv.status == "waiting" and player.inv.activeMenu == 3): player.inv.keySettings.changeKey(key)
-            #else: 
             toDo[a]()
     pressedKeys2 = pressedKeys.copy()
 
     return
 
+#Dessine tout sur l'écran
 def drawAll():
     screen.fill((255,255,255))
     group.center(player.rect)
     group.draw(screen)
     healthBar(80,50)
-    #pygame.draw.line(screen, (255,0,0), player.rect.center, player.target.rect.center)
     player.inv.update(screen)
     if player.inv.changed:
-        #group.add(player.inv.dropped)
         groupReset()
         player.inv.changed = False
-        print("changed")
-    
-    #print([(a,a.groups()) for a in player.inv.inv], [a for a in player.inv.dropped], player.inv.selectedItem)
 
+#Gérer le menu
 def fpausedMenu(menuId):
     global gamePaused
     if menuId == 5: 
@@ -140,6 +136,7 @@ def fpausedMenu(menuId):
     else: 
         gameMenu.activeMenu = gameMenu.menus[menuId]
 
+#Boucle principale
 loadMap("carte")
 doContinue = True
 while doContinue:
@@ -152,22 +149,18 @@ while doContinue:
             group = groupReset()
             gameMenu = menu.pauseMenu(screen.get_size())
         
-        #print(event)
+        #Si touches pressées
         if event.type == KEYDOWN:
             pressedKeys[event.dict["key"]] = True
         if event.type == KEYUP:
-            #print(event.dict)
             
             del pressedKeys[event.dict["key"]]
             
+            # si "échap" pressée
             if event.scancode == 41:
                 if not gamePaused: gamePaused = True
-            if event.key == K_i:
-                player.pv -= 5
-                player.inv.addItem(gameItems.weapons["fire-wand"], 1)
-            if event.key == K_j:
-                player.inv.addItem(gameItems.weapons["fire-wand"], 2)
         
+        #Si click détecté
         if event.type == MOUSEBUTTONUP:
             if gamePaused:
                 gameMenu.gettingClicked()

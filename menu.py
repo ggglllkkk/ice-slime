@@ -21,6 +21,7 @@ class pauseMenu():
 
         self.i = 0
 
+    #si click détecté
     def gettingClicked(self):
         coos=pygame.mouse.get_pos()
 
@@ -36,9 +37,11 @@ class pauseMenu():
 
     def audioSettingsMenu(self, screen):
         pass
-
+    
+    #menu pour changer les inputs (non fonctionnel)
     def keySettingsMenu(self, screen, police):
 
+        #réécrire le csv avec l'input modifié
         def changeKey(self, key):
             print(key)
 
@@ -55,6 +58,7 @@ class pauseMenu():
         a=manager.getKeys()
         b=manager.getTexts()[self.gameLanguage]
 
+        #préparer le dessin du menu
         texts=b[6:12]
         if self.i == 0:
             self.menuButtons=[]
@@ -65,6 +69,7 @@ class pauseMenu():
                 i+=1
             self.i=1
 
+        #dessiner lemenu
         i=0
         for k in self.menuButtons:
             if k.update(screen, police):
@@ -83,7 +88,8 @@ class pauseMenu():
 
     def languageMenu(self, screen):
         pass
-
+    
+    #update
     def update(self, screen, police):
         self.menus = [self.videoSettingsMenu, self.audioSettingsMenu, self.keySettingsMenu, self.languageMenu, self.creditsMenu]
 
@@ -102,6 +108,7 @@ class pauseMenu():
         return False
 
 
+#classe bouton pour une implémentation + rapide
 class Button():
     def __init__(self, text, color, rect, myId):
         self.id = myId

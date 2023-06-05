@@ -26,6 +26,7 @@ class weapon(pygame.sprite.Sprite):
         self.currentPos = 0
         self.currentCooldown = 0
 
+    #update
     def update(self, newRect, rotation=0):
         
         self.rect.x = newRect.x
@@ -36,25 +37,26 @@ class weapon(pygame.sprite.Sprite):
 
         self.image = pygame.transform.rotate(self.initialImage, rotation)
 
+        #Animation de l'épée qui attaque
         if self.isAttacking:
             self.currentPos+=1
             if not self.isReversed: self.image = pygame.transform.rotate(self.initialImage, -20*self.currentPos)
             else: self.image = pygame.transform.rotate(self.initialImage, 20*self.currentPos)
         
+        #épée en fin de course
         if self.currentPos == 10:
             self.currentPos = 0
             self.isAttacking = False
             self.isRecharging = True
 
+        #épée en train de recharger
         if self.isRecharging:
             self.currentCooldown +=1
             if self.currentCooldown<=10:
                 if not self.isReversed: self.image = pygame.transform.rotate(self.initialImage, -10*(10-self.currentCooldown))
                 else: self.image = pygame.transform.rotate(self.initialImage, 10*(10-self.currentCooldown))
-            """else:
-                if not self.isReversed: self.initialImage = pygame.transform.rotate(self.initialImage, -10*(10-self.currentCooldown))
-                else: self.initialImage = pygame.transform.rotate(self.initialImage, 10*(10-self.currentCooldown))"""
         
+        #fin du rechargement
         if self.currentCooldown == self.cooldown:
             self.isRecharging = False
             self.currentCooldown = 0
@@ -62,11 +64,13 @@ class weapon(pygame.sprite.Sprite):
     def attack(self):
         self.isAttacking = True
 
+    #inverse l'image de l'épée
     def reverse(self):
         self.initialImage = pygame.transform.flip(self.initialImage, True, False)
         self.isReversed = not self.isReversed
     
-    
+
+#différents instances d'armes 
 weapons = {
     "dagger" : weapon("Dague", "cac","", 1,38,1,"dague.png", 2, 60),
     "sword" : weapon("Basic sword", "cac","", 2, 43, 3, "sword.png", 4, 85),

@@ -1,6 +1,7 @@
 import pygame, pytmx, pyscroll, mobs
 
 class Map():
+    #initialisation et crée des variables ensuite récupérées par le main
     def __init__(self, tilemapPath):
         self.tmx_data = pytmx.util_pygame.load_pygame("data/tilemaps/"+tilemapPath+".tmx")
         self.map_data = pyscroll.data.TiledMapData(self.tmx_data)
